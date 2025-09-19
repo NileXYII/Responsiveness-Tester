@@ -1,255 +1,747 @@
 <!doctype html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Website Viewer — Desktop / Custom Ratios</title>
   <style>
-    :root{ --accent:#2563eb; --bg:#0f172a; --card:#0b1220; --muted:#94a3b8 }
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    body{background:linear-gradient(180deg,#071127 0%, #071a2a 100%);color:#e6eef8;padding:18px;box-sizing:border-box}
-    .app{max-width:1100px;margin:0 auto}
-    .card{background:rgba(255,255,255,0.03);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-    h1{margin:0 0 8px;font-size:20px}
-    .row{display:flex;gap:10px;align-items:center}
-    label{font-size:13px;color:var(--muted)}
-    input[type="text"],input[type="number"],select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;min-width:0}
-    button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
-    .controls{display:grid;grid-template-columns:1fr 320px;gap:12px;margin-top:12px}
-    .presets{display:flex;flex-wrap:wrap;gap:8px}
-    .preset-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
-    .viewer-wrap{margin-top:14px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
-    .viewport-frame{width:100%;height:600px;background:white;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-    .frame-inner{border:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 8px rgba(2,6,23,0.4);background:white}
-    .info{margin-top:8px;font-size:13px;color:var(--muted)}
-    .small{font-size:12px;color:var(--muted)}
-    .kb{display:flex;gap:6px;align-items:center}
-    .toggle{display:inline-flex;align-items:center;gap:8px}
-    .danger{color:#ffb4b4}
-    @media (max-width:880px){.controls{grid-template-columns:1fr;margin-bottom:8px}.viewer-wrap{margin-top:10px}}
+    :root{ 
+      --accent:#2563eb; 
+      --bg:#0f172a; 
+      --card:#0b1220; 
+      --muted:#94a3b8;
+      --border:rgba(255,255,255,0.06);
+      --glass:rgba(255,255,255,0.03);
+    }
+    
+    * { box-sizing: border-box; }
+    
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    }
+    
+    body{
+      background:linear-gradient(180deg,#071127 0%, #071a2a 100%);
+      color:#e6eef8;
+      padding:12px;
+      min-height:100vh;
+    }
+    
+    .app{
+      max-width:1200px;
+      margin:0 auto;
+      width:100%;
+    }
+    
+    .card{
+      background:var(--glass);
+      padding:16px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(2,6,23,0.6);
+      border:1px solid var(--border);
+    }
+    
+    h1{
+      margin:0 0 12px;
+      font-size:clamp(18px, 4vw, 24px);
+      font-weight:600;
+    }
+    
+    .subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:16px;
+      line-height:1.4;
+    }
+    
+    .controls{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    
+    .control-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    
+    .control-group label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:500;
+      white-space:nowrap;
+      min-width:60px;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    select{
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,0.2);
+      color:#e6eef8;
+      font-size:14px;
+      min-width:0;
+      flex:1;
+      min-width:120px;
+    }
+    
+    input[type="text"]{
+      min-width:200px;
+    }
+    
+    input[type="number"]{
+      max-width:100px;
+    }
+    
+    input[type="range"]{
+      flex:1;
+      min-width:100px;
+      max-width:150px;
+    }
+    
+    button{
+      background:var(--accent);
+      color:white;
+      padding:10px 16px;
+      border-radius:8px;
+      border:0;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:500;
+      transition:all 0.2s ease;
+      white-space:nowrap;
+    }
+    
+    button:hover{
+      background:#1d4ed8;
+      transform:translateY(-1px);
+    }
+    
+    button:active{
+      transform:translateY(0);
+    }
+    
+    .preset-btn{
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--muted);
+      padding:8px 12px;
+    }
+    
+    .preset-btn:hover{
+      background:var(--border);
+      color:#e6eef8;
+    }
+    
+    .preset-btn.active{
+      background:var(--accent);
+      color:white;
+      border-color:var(--accent);
+    }
+    
+    .status-card{
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:14px;
+      margin-top:16px;
+    }
+    
+    .status-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    
+    .current-size{
+      font-weight:600;
+      color:#e6eef8;
+      font-size:16px;
+    }
+    
+    .status-text{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+    }
+    
+    .viewer-wrap{
+      margin-top:20px;
+      background:var(--glass);
+      padding:16px;
+      border-radius:12px;
+      border:1px solid var(--border);
+    }
+    
+    .viewport-container{
+      width:100%;
+      min-height:400px;
+      background:white;
+      border-radius:8px;
+      overflow:auto;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      position:relative;
+      border:1px solid rgba(0,0,0,0.1);
+    }
+    
+    .frame-holder{
+      background:white;
+      box-shadow:0 2px 8px rgba(2,6,23,0.4);
+      border-radius:4px;
+      overflow:hidden;
+      transform-origin:top left;
+      position:relative;
+    }
+    
+    .viewer-iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      background:white;
+      display:block;
+    }
+    
+    .info{
+      margin-top:12px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    
+    .danger{
+      color:#ff6b6b;
+    }
+    
+    .success{
+      color:#51cf66;
+    }
+    
+    .warning{
+      color:#ffd43b;
+    }
+    
+    .zoom-display{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:500;
+      min-width:50px;
+      text-align:center;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      body {
+        padding: 8px;
+      }
+      
+      .card {
+        padding: 12px;
+      }
+      
+      h1 {
+        font-size: 20px;
+      }
+      
+      .control-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+      }
+      
+      .control-group label {
+        min-width: auto;
+        margin-bottom: 4px;
+      }
+      
+      input[type="text"],
+      input[type="number"],
+      select {
+        min-width: auto;
+        width: 100%;
+      }
+      
+      .size-inputs {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      
+      .size-inputs input {
+        flex: 1;
+      }
+      
+      .orientation-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      
+      .zoom-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .status-row {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+      
+      .viewport-container {
+        min-height: 300px;
+      }
+      
+      button {
+        padding: 12px 16px;
+        font-size: 16px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .size-inputs {
+        flex-direction: column;
+      }
+      
+      .size-inputs input {
+        width: 100%;
+      }
+      
+      .orientation-controls {
+        justify-content: center;
+      }
+      
+      .preset-btn {
+        flex: 1;
+        text-align: center;
+      }
+    }
+    
+    @media (min-width: 992px) {
+      .controls {
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+      }
+      
+      .viewport-container {
+        min-height: 600px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="card">
-      <h1>Website Viewer — desktop / custom ratios</h1>
-      <div class="small">Enter a URL below and choose a device ratio or custom width & height. Note: some websites prevent embedding (X-Frame-Options / CSP).</div><div class="controls">
-    <div>
-      <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
-        <label for="url">URL</label>
-        <input id="url" type="text" placeholder="https://example.com" style="flex:1" value="https://example.com">
-        <button id="load">Load</button>
+      <h1>Website Viewer — Desktop / Custom Ratios</h1>
+      <div class="subtitle">
+        Enter a URL below and choose a device ratio or custom width & height. 
+        Note: some websites prevent embedding due to security headers (X-Frame-Options / CSP).
       </div>
-
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-        <label for="preset">Preset</label>
-        <select id="preset">
-          <option value="responsive">Responsive (fills container)</option>
-          <option value="desktop1366">Desktop 1366 × 768</option>
-          <option value="laptop1280">Laptop 1280 × 800</option>
-          <option value="tablet1024">Tablet 1024 × 1366 (portrait)</option>
-          <option value="ipad_land">iPad 1024 × 768 (landscape)</option>
-          <option value="mobile360">Mobile 360 × 800</option>
-        </select>
-
-        <label for="scale">Fit</label>
-        <select id="scale">
-          <option value="contain">Fit to container</option>
-          <option value="actual">Actual size (no scaling)</option>
-          <option value="cover">Cover (fill, may crop)</option>
-        </select>
-      </div>
-
-      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-        <label>Custom</label>
-        <input id="width" type="number" placeholder="width (px)" style="width:110px"> ×
-        <input id="height" type="number" placeholder="height (px)" style="width:110px">
-        <button id="applyCustom">Apply</button>
-      </div>
-
-      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-        <label>Orientation</label>
-        <button class="preset-btn" data-rot="0">Landscape</button>
-        <button class="preset-btn" data-rot="90">Portrait</button>
-        <label style="margin-left:8px">Zoom</label>
-        <input id="zoom" type="range" min="0.2" max="1.5" step="0.01" value="1" style="width:120px">
-        <span id="zoomVal">100%</span>
-      </div>
-
-      <div style="margin-top:10px" class="kb">
-        <div class="small">Tip: If a site refuses to load in the iframe due to security headers, try opening it in a new tab or using a server-side proxy.</div>
-      </div>
-    </div>
-
-    <div>
-      <div class="card" style="padding:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div class="small">Current viewport</div>
-            <div id="currentSize" style="font-weight:600">— × —</div>
+      
+      <div class="controls">
+        <div class="main-controls">
+          <!-- URL Input -->
+          <div class="control-group">
+            <label for="url">Website URL</label>
+            <input id="url" type="text" placeholder="https://example.com" value="https://example.com">
+            <button id="loadBtn">Load Site</button>
           </div>
-          <div>
-            <button id="openNew">Open in new tab</button>
+
+          <!-- Preset Selection -->
+          <div class="control-group">
+            <label for="preset">Device Preset</label>
+            <select id="preset">
+              <option value="responsive">Responsive (fills container)</option>
+              <option value="desktop1366" selected>Desktop 1366 × 768</option>
+              <option value="laptop1280">Laptop 1280 × 800</option>
+              <option value="tablet1024">Tablet 1024 × 1366 (portrait)</option>
+              <option value="ipad_land">iPad 1024 × 768 (landscape)</option>
+              <option value="mobile360">Mobile 360 × 800</option>
+              <option value="custom">Custom Size</option>
+            </select>
+          </div>
+
+          <!-- Custom Size -->
+          <div class="control-group" id="customSizeGroup" style="display:none;">
+            <label>Custom Size</label>
+            <div class="size-inputs">
+              <input id="widthInput" type="number" placeholder="Width (px)" min="200" max="3000">
+              <span>×</span>
+              <input id="heightInput" type="number" placeholder="Height (px)" min="200" max="3000">
+              <button id="applyCustomBtn">Apply</button>
+            </div>
+          </div>
+
+          <!-- Orientation Controls -->
+          <div class="control-group">
+            <label>Orientation</label>
+            <div class="orientation-controls">
+              <button class="preset-btn" id="landscapeBtn">📱 Landscape</button>
+              <button class="preset-btn" id="portraitBtn">📱 Portrait</button>
+            </div>
+          </div>
+
+          <!-- Zoom and Fit Controls -->
+          <div class="control-group">
+            <label>Zoom & Fit</label>
+            <div class="zoom-controls">
+              <input id="zoomSlider" type="range" min="0.1" max="2" step="0.1" value="1">
+              <span class="zoom-display" id="zoomDisplay">100%</span>
+              <select id="fitMode">
+                <option value="contain">Fit to container</option>
+                <option value="actual">Actual size</option>
+                <option value="fill">Fill container</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div style="margin-top:8px" class="info">Status: <span id="status">idle</span></div>
+
+        <!-- Status Card for larger screens -->
+        <div class="status-card" id="statusCard">
+          <div class="status-row">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Current Viewport</div>
+              <div class="current-size" id="currentSize">1366 × 768</div>
+            </div>
+            <button id="openNewBtn">Open in New Tab</button>
+          </div>
+          <div class="status-text">
+            Status: <span id="statusText">Ready to load</span>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!-- Viewer Section -->
+    <div class="viewer-wrap">
+      <div class="viewport-container" id="viewportContainer">
+        <div class="frame-holder" id="frameHolder">
+          <iframe 
+            id="viewerIframe" 
+            class="viewer-iframe"
+            sandbox="allow-scripts allow-forms allow-popups allow-same-origin allow-top-navigation"
+            loading="lazy"
+            srcdoc="<div style='padding:40px;text-align:center;font-family:system-ui;color:#666;'><h2>Website Preview</h2><p>Enter a URL above and click 'Load Site' to preview websites here.</p></div>">
+          </iframe>
+        </div>
+      </div>
+      <div class="info" id="infoText"></div>
     </div>
   </div>
 
-  <div class="viewer-wrap card">
-    <div class="viewport-frame" id="viewportContainer">
-      <div id="frameHolder" class="frame-inner" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
-        <iframe id="viewer" sandbox="allow-scripts allow-forms allow-popups allow-same-origin" style="width:100%;height:100%;border:0;background:white" srcdoc="<p style=\"padding:18px;font-family:system-ui\">Enter a URL and press Load to preview here.</p>"></iframe>
-      </div>
-    </div>
-    <div class="info" id="notes"></div>
-  </div>
-
-</div>
-
-  </div>  <script>
-    const urlInput = document.getElementById('url');
-    const loadBtn = document.getElementById('load');
-    const preset = document.getElementById('preset');
-    const widthIn = document.getElementById('width');
-    const heightIn = document.getElementById('height');
-    const applyCustom = document.getElementById('applyCustom');
-    const viewer = document.getElementById('viewer');
-    const frameHolder = document.getElementById('frameHolder');
-    const currentSize = document.getElementById('currentSize');
-    const status = document.getElementById('status');
-    const notes = document.getElementById('notes');
-    const openNew = document.getElementById('openNew');
-    const scaleSelect = document.getElementById('scale');
-    const zoom = document.getElementById('zoom');
-    const zoomVal = document.getElementById('zoomVal');
-
-    function updateCurrentSize(w,h){ currentSize.textContent = w + ' × ' + h; }
-
-    const presets = {
-      desktop1366: {w:1366,h:768},
-      laptop1280: {w:1280,h:800},
-      tablet1024:{w:1024,h:1366},
-      ipad_land:{w:1024,h:768},
-      mobile360:{w:360,h:800}
-    }
-
-    function applyViewport(w,h){
-      // set numeric values and apply style to frameHolder
-      frameHolder.style.width = w + 'px';
-      frameHolder.style.height = h + 'px';
-      updateCurrentSize(w,h);
-      // scale to fit container if requested
-      const container = document.getElementById('viewportContainer');
-      const fitMode = scaleSelect.value;
-      const zoomFactor = parseFloat(zoom.value) || 1;
-      if(fitMode === 'contain'){
-        const cw = container.clientWidth - 24; // padding
-        const ch = 600 - 24; // fixed viewer frame height baseline
-        const scale = Math.min(cw / w, ch / h, 1) * zoomFactor;
-        frameHolder.style.transform = 'scale(' + scale + ')';
-        frameHolder.style.transformOrigin = 'top left';
-      } else if(fitMode === 'cover'){
-        const cw = container.clientWidth - 24;
-        const ch = 600 - 24;
-        const scale = Math.max(cw / w, ch / h) * zoomFactor;
-        frameHolder.style.transform = 'scale(' + scale + ')';
-        frameHolder.style.transformOrigin = 'top left';
-      } else {
-        frameHolder.style.transform = 'scale(' + zoomFactor + ')';
+  <script>
+    class WebsiteViewer {
+      constructor() {
+        this.initElements();
+        this.initEventListeners();
+        this.presets = {
+          desktop1366: { w: 1366, h: 768 },
+          laptop1280: { w: 1280, h: 800 },
+          tablet1024: { w: 1024, h: 1366 },
+          ipad_land: { w: 1024, h: 768 },
+          mobile360: { w: 360, h: 800 }
+        };
+        this.currentUrl = '';
+        this.currentWidth = 1366;
+        this.currentHeight = 768;
+        this.initializeViewer();
       }
-    }
 
-    function normalizeUrl(u){
-      try{ new URL(u); return u; }catch(e){ return 'http://' + u; }
-    }
-
-    loadBtn.addEventListener('click', ()=>{
-      const raw = urlInput.value.trim();
-      if(!raw){ alert('Enter a URL'); return; }
-      const normalized = normalizeUrl(raw);
-      status.textContent = 'loading...';
-      notes.textContent = '';
-      // set iframe src
-      viewer.removeAttribute('srcdoc');
-      viewer.src = normalized;
-      openNew.onclick = ()=> window.open(normalized, '_blank');
-    });
-
-    // Preset change
-    preset.addEventListener('change', ()=>{
-      const val = preset.value;
-      if(val === 'responsive'){
-        frameHolder.style.width = '100%'; frameHolder.style.height = '600px';
-        updateCurrentSize('responsive','600');
-        frameHolder.style.transform = 'scale(1)';
-        frameHolder.style.maxWidth = '100%';
-        return;
+      initElements() {
+        this.elements = {
+          url: document.getElementById('url'),
+          loadBtn: document.getElementById('loadBtn'),
+          preset: document.getElementById('preset'),
+          widthInput: document.getElementById('widthInput'),
+          heightInput: document.getElementById('heightInput'),
+          applyCustomBtn: document.getElementById('applyCustomBtn'),
+          customSizeGroup: document.getElementById('customSizeGroup'),
+          landscapeBtn: document.getElementById('landscapeBtn'),
+          portraitBtn: document.getElementById('portraitBtn'),
+          zoomSlider: document.getElementById('zoomSlider'),
+          zoomDisplay: document.getElementById('zoomDisplay'),
+          fitMode: document.getElementById('fitMode'),
+          viewerIframe: document.getElementById('viewerIframe'),
+          frameHolder: document.getElementById('frameHolder'),
+          viewportContainer: document.getElementById('viewportContainer'),
+          currentSize: document.getElementById('currentSize'),
+          statusText: document.getElementById('statusText'),
+          infoText: document.getElementById('infoText'),
+          openNewBtn: document.getElementById('openNewBtn')
+        };
       }
-      const p = presets[val];
-      if(p) {
-        widthIn.value = p.w; heightIn.value = p.h;
-        applyViewport(p.w,p.h);
+
+      initEventListeners() {
+        // Load button
+        this.elements.loadBtn.addEventListener('click', () => this.loadWebsite());
+        
+        // Enter key on URL input
+        this.elements.url.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.loadWebsite();
+        });
+
+        // Preset selection
+        this.elements.preset.addEventListener('change', () => this.handlePresetChange());
+
+        // Custom size
+        this.elements.applyCustomBtn.addEventListener('click', () => this.applyCustomSize());
+
+        // Orientation buttons
+        this.elements.landscapeBtn.addEventListener('click', () => this.toggleOrientation('landscape'));
+        this.elements.portraitBtn.addEventListener('click', () => this.toggleOrientation('portrait'));
+
+        // Zoom slider
+        this.elements.zoomSlider.addEventListener('input', () => this.updateZoom());
+
+        // Fit mode
+        this.elements.fitMode.addEventListener('change', () => this.applyViewport());
+
+        // Open in new tab
+        this.elements.openNewBtn.addEventListener('click', () => this.openInNewTab());
+
+        // Iframe load events
+        this.elements.viewerIframe.addEventListener('load', () => this.handleIframeLoad());
+        this.elements.viewerIframe.addEventListener('error', () => this.handleIframeError());
+
+        // Window resize
+        window.addEventListener('resize', () => this.debounce(() => this.applyViewport(), 250));
       }
-    });
 
-    applyCustom.addEventListener('click', ()=>{
-      const w = parseInt(widthIn.value,10);
-      const h = parseInt(heightIn.value,10);
-      if(!w || !h){ alert('Enter valid width and height'); return; }
-      applyViewport(w,h);
-    });
+      initializeViewer() {
+        this.updateCurrentSize();
+        this.applyViewport();
+        this.updateZoom();
+      }
 
-    // Orientation buttons
-    document.querySelectorAll('.preset-btn[data-rot]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const rot = parseInt(btn.getAttribute('data-rot'));
-        let w = parseInt(widthIn.value,10) || frameHolder.clientWidth;
-        let h = parseInt(heightIn.value,10) || frameHolder.clientHeight;
-        if(rot === 90 || rot === -90){ [w,h] = [h,w]; }
-        widthIn.value = w; heightIn.value = h;
-        applyViewport(w,h);
-      });
-    });
-
-    // zoom slider
-    zoom.addEventListener('input', ()=>{
-      zoomVal.textContent = Math.round(zoom.value*100) + '%';
-      // reapply using current width/height
-      const w = parseInt(widthIn.value,10) || frameHolder.clientWidth;
-      const h = parseInt(heightIn.value,10) || frameHolder.clientHeight;
-      applyViewport(w,h);
-    });
-
-    // iframe load detection
-    viewer.addEventListener('load', ()=>{
-      status.textContent = 'loaded — may be cross-origin';
-      notes.textContent = '';
-      // detect if the site refused to be embedded
-      setTimeout(()=>{
-        try{
-          // accessing contentDocument will throw for cross-origin pages
-          const doc = viewer.contentDocument;
-          if(!doc || doc.documentElement.innerHTML.trim().length === 0){
-            notes.innerHTML = '<span class="danger">This page could not be embedded (empty response). Try opening in a new tab or use a proxy.</span>';
-            status.textContent = 'blocked or empty';
-          } else {
-            status.textContent = 'loaded (same-origin)';
+      normalizeUrl(url) {
+        url = url.trim();
+        if (!url) return '';
+        
+        try {
+          new URL(url);
+          return url;
+        } catch (e) {
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            return 'https://' + url;
           }
-        }catch(e){
-          // cross-origin; we can't inspect but it likely loaded — still may be blocked by X-Frame-Options
-          // Offer helpful message
-          notes.innerHTML = 'If you see a blank screen the site may block framing (X-Frame-Options or Content-Security-Policy). Open in a new tab if needed.';
-          status.textContent = 'loaded (cross-origin)';
+          return url;
         }
-      },300);
+      }
+
+      loadWebsite() {
+        const rawUrl = this.elements.url.value;
+        if (!rawUrl.trim()) {
+          this.showStatus('Please enter a URL', 'warning');
+          this.elements.url.focus();
+          return;
+        }
+
+        const normalizedUrl = this.normalizeUrl(rawUrl);
+        this.currentUrl = normalizedUrl;
+        
+        this.showStatus('Loading website...', 'loading');
+        this.elements.infoText.textContent = '';
+        
+        // Clear previous content
+        this.elements.viewerIframe.removeAttribute('srcdoc');
+        this.elements.viewerIframe.src = normalizedUrl;
+        
+        // Update URL input with normalized URL
+        if (normalizedUrl !== rawUrl) {
+          this.elements.url.value = normalizedUrl;
+        }
+      }
+
+      handlePresetChange() {
+        const selectedPreset = this.elements.preset.value;
+        
+        if (selectedPreset === 'custom') {
+          this.elements.customSizeGroup.style.display = 'flex';
+          return;
+        } else {
+          this.elements.customSizeGroup.style.display = 'none';
+        }
+
+        if (selectedPreset === 'responsive') {
+          this.setResponsiveMode();
+          return;
+        }
+
+        const preset = this.presets[selectedPreset];
+        if (preset) {
+          this.currentWidth = preset.w;
+          this.currentHeight = preset.h;
+          this.elements.widthInput.value = preset.w;
+          this.elements.heightInput.value = preset.h;
+          this.updateCurrentSize();
+          this.applyViewport();
+        }
+      }
+
+      applyCustomSize() {
+        const width = parseInt(this.elements.widthInput.value);
+        const height = parseInt(this.elements.heightInput.value);
+        
+        if (!width || !height || width < 200 || height < 200) {
+          this.showStatus('Please enter valid dimensions (minimum 200px)', 'warning');
+          return;
+        }
+
+        this.currentWidth = width;
+        this.currentHeight = height;
+        this.updateCurrentSize();
+        this.applyViewport();
+      }
+
+      toggleOrientation(orientation) {
+        // Update button states
+        this.elements.landscapeBtn.classList.toggle('active', orientation === 'landscape');
+        this.elements.portraitBtn.classList.toggle('active', orientation === 'portrait');
+        
+        if (orientation === 'portrait' && this.currentWidth > this.currentHeight) {
+          // Swap dimensions for portrait
+          [this.currentWidth, this.currentHeight] = [this.currentHeight, this.currentWidth];
+          this.elements.widthInput.value = this.currentWidth;
+          this.elements.heightInput.value = this.currentHeight;
+          this.updateCurrentSize();
+          this.applyViewport();
+        } else if (orientation === 'landscape' && this.currentHeight > this.currentWidth) {
+          // Swap dimensions for landscape
+          [this.currentWidth, this.currentHeight] = [this.currentHeight, this.currentWidth];
+          this.elements.widthInput.value = this.currentWidth;
+          this.elements.heightInput.value = this.currentHeight;
+          this.updateCurrentSize();
+          this.applyViewport();
+        }
+      }
+
+      updateZoom() {
+        const zoom = parseFloat(this.elements.zoomSlider.value);
+        this.elements.zoomDisplay.textContent = Math.round(zoom * 100) + '%';
+        this.applyViewport();
+      }
+
+      setResponsiveMode() {
+        this.elements.frameHolder.style.width = '100%';
+        this.elements.frameHolder.style.height = '600px';
+        this.elements.frameHolder.style.transform = 'scale(1)';
+        this.elements.currentSize.textContent = 'Responsive';
+      }
+
+      applyViewport() {
+        if (this.elements.preset.value === 'responsive') {
+          this.setResponsiveMode();
+          return;
+        }
+
+        const frameHolder = this.elements.frameHolder;
+        const container = this.elements.viewportContainer;
+        const fitMode = this.elements.fitMode.value;
+        const zoom = parseFloat(this.elements.zoomSlider.value);
+
+        // Set frame dimensions
+        frameHolder.style.width = this.currentWidth + 'px';
+        frameHolder.style.height = this.currentHeight + 'px';
+
+        // Calculate container dimensions
+        const containerRect = container.getBoundingClientRect();
+        const containerWidth = containerRect.width - 32; // Account for padding
+        const containerHeight = containerRect.height - 32;
+
+        let scale = zoom;
+
+        if (fitMode === 'contain') {
+          const scaleX = containerWidth / this.currentWidth;
+          const scaleY = containerHeight / this.currentHeight;
+          scale = Math.min(scaleX, scaleY, 1) * zoom;
+        } else if (fitMode === 'fill') {
+          const scaleX = containerWidth / this.currentWidth;
+          const scaleY = containerHeight / this.currentHeight;
+          scale = Math.max(scaleX, scaleY) * zoom;
+        }
+
+        frameHolder.style.transform = `scale(${scale})`;
+        frameHolder.style.transformOrigin = 'top left';
+
+        // Center the frame if it's smaller than the container
+        const scaledWidth = this.currentWidth * scale;
+        const scaledHeight = this.currentHeight * scale;
+        
+        if (scaledWidth < containerWidth) {
+          frameHolder.style.marginLeft = Math.max(0, (containerWidth - scaledWidth) / 2) + 'px';
+        } else {
+          frameHolder.style.marginLeft = '0px';
+        }
+      }
+
+      updateCurrentSize() {
+        this.elements.currentSize.textContent = `${this.currentWidth} × ${this.currentHeight}`;
+      }
+
+      handleIframeLoad() {
+        try {
+          const iframe = this.elements.viewerIframe;
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          
+          if (doc && doc.documentElement) {
+            this.showStatus('Website loaded successfully', 'success');
+            this.elements.infoText.innerHTML = '<span class="success">✓ Website loaded and ready for interaction</span>';
+          } else {
+            this.showStatus('Loaded (cross-origin)', 'warning');
+            this.elements.infoText.innerHTML = '<span class="warning">⚠ Website loaded but may have restricted access due to cross-origin policies</span>';
+          }
+        } catch (error) {
+          this.showStatus('Loaded (restricted access)', 'warning');
+          this.elements.infoText.innerHTML = '<span class="warning">⚠ Website loaded but content access is restricted. This is normal for most external websites.</span>';
+        }
+      }
+
+      handleIframeError() {
+        this.showStatus('Failed to load website', 'danger');
+        this.elements.infoText.innerHTML = '<span class="danger">✗ Failed to load website. The site may block embedding or the URL may be invalid.</span>';
+      }
+
+      openInNewTab() {
+        if (this.currentUrl) {
+          window.open(this.currentUrl, '_blank', 'noopener,noreferrer');
+        }
+      }
+
+      showStatus(message, type = 'info') {
+        this.elements.statusText.textContent = message;
+        this.elements.statusText.className = type;
+      }
+
+      debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+    }
+
+    // Initialize the viewer when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      new WebsiteViewer();
     });
-
-    // initial viewport
-    preset.value = 'desktop1366';
-    preset.dispatchEvent(new Event('change'));
-
-  </script></body>
+  </script>
+</body>
 </html>
